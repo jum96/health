@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>岭南康养·灵境向导</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">🏮</div>
+                    <h1>岭南康养·灵境向导</h1>
+                </div>
+                <nav class="nav-tabs">
+                    <button class="nav-tab active" data-tab="chat">💬 智能对话</button>
+                    <button class="nav-tab" data-tab="culture">🏛️ 文化科普</button>
+                    <button class="nav-tab" data-tab="health">🌿 养生方案</button>
+                    <button class="nav-tab" data-tab="calendar">📅 节气日历</button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 智能对话面板 -->
+            <section id="chat-panel" class="panel active">
+                <div class="chat-container">
+                    <div class="chat-sidebar">
+                        <div class="quick-questions">
+                            <h3>快捷问题</h3>
+                            <div class="question-list">
+                                <button class="question-btn" data-question="介绍一下岭南凉茶的历史和功效">🍵 岭南凉茶</button>
+                                <button class="question-btn" data-question="岭南地区湿气重，怎么调理">💧 祛湿调理</button>
+                                <button class="question-btn" data-question="介绍粤剧和它的健康养生价值">🎭 粤剧文化</button>
+                                <button class="question-btn" data-question="春分节气的岭南养生方案">🌸 春分养生</button>
+                                <button class="question-btn" data-question="东莞有什么特色非遗文化">🐲 东莞非遗</button>
+                            </div>
+                        </div>
+                        <div class="constitution-test">
+                            <h3>体质测试</h3>
+                            <button id="start-constitution-test" class="test-btn">开始九种体质自测</button>
+                        </div>
+                    </div>
+
+                    <div class="chat-main">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message assistant">
+                                <div class="message-avatar">🏮</div>
+                                <div class="message-content">
+                                    <div class="message-text">
+                                        <p>你好！我是<strong>岭南康养·灵境向导</strong> 🌟</p>
+                                        <p>我是融合岭南文化（广府、潮汕、客家）与现代健康知识的AI智能体。我可以帮你：</p>
+                                        <ul>
+                                            <li>🏛️ 了解岭南文化、非遗、民俗</li>
+                                            <li>💬 解答健康疑问，推荐养生方案</li>
+                                            <li>📅 查看24节气养生指南</li>
+                                            <li>🧘 进行体质测试，获取个性化建议</li>
+                                        </ul>
+                                        <p>试试点击左侧的快捷问题，或者直接输入你的问题吧！</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-area">
+                            <div class="input-wrapper">
+                                <textarea id="user-input" placeholder="输入你的问题..." rows="1"></textarea>
+                                <button id="send-btn" class="send-btn">发送</button>
+                            </div>
+                            <div class="input-hint">按 Enter 发送，Shift+Enter 换行</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 文化科普面板 -->
+            <section id="culture-panel" class="panel">
+                <div class="culture-container">
+                    <div class="culture-categories">
+                        <button class="category-btn active" data-category="heritage">🏮 非遗文化</button>
+                        <button class="category-btn" data-category="architecture">🏯 岭南建筑</button>
+                        <button class="category-btn" data-category="food">🍲 饮食文化</button>
+                        <button class="category-btn" data-category="customs">🎊 民俗节日</button>
+                    </div>
+                    <div class="culture-content" id="culture-content">
+                        <!-- 动态加载内容 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 养生方案面板 -->
+            <section id="health-panel" class="panel">
+                <div class="health-container">
+                    <div class="health-sidebar">
+                        <h3>方案类型</h3>
+                        <div class="health-options">
+                            <button class="health-option active" data-type="seasonal">🌸 季节养生</button>
+                            <button class="health-option" data-type="constitution">🧘 体质养生</button>
+                            <button class="health-option" data-type="diet">🍵 食疗药膳</button>
+                        </div>
+                    </div>
+                    <div class="health-main" id="health-content">
+                        <!-- 动态加载内容 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 节气日历面板 -->
+            <section id="calendar-panel" class="panel">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <h2>二十四节气养生日历</h2>
+                        <div class="year-selector">
+                            <button class="year-btn" id="prev-year">◀</button>
+                            <span id="current-year">2024</span>
+                            <button class="year-btn" id="next-year">▶</button>
+                        </div>
+                    </div>
+                    <div class="solar-terms-grid" id="solar-terms-grid">
+                        <!-- 24节气卡片 -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 体质测试弹窗 -->
+    <div id="constitution-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>九种体质自测</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="constitution-test-content">
+                <!-- 测试内容动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
