@@ -3,6 +3,7 @@
 class LingnanHealthAgent {
     constructor() {
         this.currentTab = 'chat';
+        this.conversationHistory = [];
         this.init();
     }
 
@@ -84,7 +85,7 @@ class LingnanHealthAgent {
         document.getElementById(`${tabName}-panel`).classList.add('active');
     }
 
-    sendMessage() {
+    async sendMessage() {
         const input = document.getElementById('user-input');
         const message = input.value.trim();
         if (!message) return;
@@ -96,11 +97,50 @@ class LingnanHealthAgent {
         // 自动调整textarea高度
         input.style.height = 'auto';
 
-        // 模拟思考
-        setTimeout(() => {
-            const response = this.generateResponse(message);
-            this.addMessage(response, 'assistant');
-        }, 800);
+        // 显示"思考中"
+        const thinkingDiv = document.createElement('div');
+        thinkingDiv.className = 'message assistant';
+        thinkingDiv.id = 'thinking-message';
+        thinkingDiv.innerHTML = `
+            <div class="message-avatar">🏮</div>
+            <div class="message-content">
+                <div class="message-text"><p>思考中...</p></div>
+            </div>
+        `;
+        document.getElementById('chat-messages').appendChild(thinkingDiv);
+        document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+
+        try {
+            // 尝试调用后端API
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: message,
+                    history: this.conversationHistory
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('thinking-message').remove();
+                this.addMessage(data.message, 'assistant');
+                this.conversationHistory.push({ role: 'user', content: message });
+                this.conversationHistory.push({ role: 'assistant', content: data.message });
+                return;
+            }
+        } catch (e) {
+            console.log('后端API不可用，使用本地模式');
+        }
+
+        // 后端不可用，使用本地模式
+        document.getElementById('thinking-message').remove();
+        const localResponse = this.generateResponse(message);
+        this.addMessage(localResponse, 'assistant');
+        this.conversationHistory.push({ role: 'user', content: message });
+        this.conversationHistory.push({ role: 'assistant', content: localResponse });
     }
 
     addMessage(text, type) {

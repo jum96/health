@@ -101,28 +101,75 @@ def generate_response(messages):
     # 检查是否有配置API
     api_key = os.getenv("DOUBAO_API_KEY")
     endpoint = os.getenv("DOUBAO_ENDPOINT", "https://ark.cn-beijing.volces.com/api/v3")
-    model = os.getenv("DOUBAO_MODEL", "ep-2024")
+    model = os.getenv("DOUBAO_MODEL", "doubao-seed-2-0-pro-260215")
 
     if api_key:
         try:
-            # 尝试使用火山引擎API
+            print(f"[调试] 使用端点: {endpoint}")
+            print(f"[调试] 使用模型: {model}")
+
             from openai import OpenAI
             client = OpenAI(
                 api_key=api_key,
-                base_url=endpoint
+                base_url=endpoint,
+                timeout=30.0
             )
 
-            response = client.chat.completions.create(
+            # 构建完整的提示词
+            system_prompt = next((m["content"] for m in messages if m["role"] == "system"), "")
+            user_messages = [m for m in messages if m["role"] != "system"]
+
+            # 使用最简单的格式：直接把最后一条用户消息用 content 字符串发送
+            last_user_msg = user_messages[-1]["content"] if user_messages else "你好"
+
+            # 如果有历史对话，拼接到提示词里
+            full_prompt = system_prompt
+            if len(user_messages) > 1:
+                history_text = "\n\n之前的对话：\n"
+                for msg in user_messages[:-1]:
+                    history_text += f"{msg['role']}: {msg['content']}\n"
+                full_prompt += history_text
+
+            response = client.responses.create(
                 model=model,
-                messages=messages,
-                temperature=0.7,
-                max_tokens=1000
+                input=[
+                    {
+                        "role": "user",
+                        "content": last_user_msg
+                    }
+                ],
+                max_output_tokens=2000,
+                store=True
             )
-            return response.choices[0].message.content
+
+            print(f"[调试] API调用成功!")
+            print(f"[调试] 响应状态: {response.status}")
+
+            # 从响应中提取文本 - 根据看到的结构
+            result_text = ""
+            try:
+                if hasattr(response, 'output') and response.output:
+                    for item in response.output:
+                        if hasattr(item, 'summary') and item.summary:
+                            for summary_item in item.summary:
+                                if hasattr(summary_item, 'text'):
+                                    result_text += summary_item.text
+            except Exception as e:
+                print(f"[调试] 解析响应失败: {e}")
+                result_text = str(response)
+
+            if not result_text:
+                result_text = "抱歉，AI生成失败，请重试。"
+
+            return result_text
         except Exception as e:
-            print(f"API调用失败: {e}")
+            import traceback
+            print(f"[调试] API调用失败: {e}")
+            print(f"[调试] 详细错误: {traceback.format_exc()}")
+            print("[调试] 使用备用回复")
             return generate_fallback_response(messages[-1]['content'])
     else:
+        print("[调试] 未配置API密钥，使用备用回复")
         return generate_fallback_response(messages[-1]['content'])
 
 # 备用回复（无API时使用）
