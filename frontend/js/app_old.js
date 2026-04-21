@@ -58,16 +58,10 @@ class LingnanHealthAgent {
         // 体质测试
         document.getElementById('start-constitution-test').addEventListener('click', () => this.startConstitutionTest());
 
-        // 模态框关闭 - 体质测试
-        document.querySelector('.modal-close').addEventListener('click', () => this.closeModal('constitution-modal'));
+        // 模态框关闭
+        document.querySelector('.modal-close').addEventListener('click', () => this.closeModal());
         document.getElementById('constitution-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'constitution-modal') this.closeModal('constitution-modal');
-        });
-
-        // 模态框关闭 - 详情
-        document.getElementById('detail-modal-close').addEventListener('click', () => this.closeModal('detail-modal'));
-        document.getElementById('detail-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'detail-modal') this.closeModal('detail-modal');
+            if (e.target.id === 'constitution-modal') this.closeModal();
         });
 
         // 年份选择
@@ -266,83 +260,18 @@ class LingnanHealthAgent {
                 break;
         }
 
-        container.innerHTML = items.map((item, index) => `
-            <div class="culture-card" data-category="${category}" data-index="${index}">
+        container.innerHTML = items.map(item => `
+            <div class="culture-card">
                 <div class="culture-card-image">${item.icon}</div>
                 <div class="culture-card-content">
                     <h3 class="culture-card-title">${item.title}</h3>
                     <p class="culture-card-desc">${item.description}</p>
+                    ${item.content ? `<p style="margin-top: 0.75rem; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7;">
+                        ${typeof item.content === 'string' ? item.content.substring(0, 100) + '...' : item.content.history ? item.content.history.substring(0, 100) + '...' : ''}
+                    </p>` : ''}
                 </div>
             </div>
         `).join('');
-
-        // 绑定点击事件
-        container.querySelectorAll('.culture-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const cat = card.dataset.category;
-                const idx = parseInt(card.dataset.index);
-                this.showCultureDetail(cat, idx);
-            });
-        });
-    }
-
-    showCultureDetail(category, index) {
-        let items = [];
-        switch (category) {
-            case 'heritage':
-                items = KNOWLEDGE_BASE.intangibleHeritage;
-                break;
-            case 'architecture':
-                items = KNOWLEDGE_BASE.architecture;
-                break;
-            case 'food':
-                items = KNOWLEDGE_BASE.foodCulture;
-                break;
-            case 'customs':
-                items = KNOWLEDGE_BASE.folkCustoms;
-                break;
-        }
-
-        const item = items[index];
-        if (!item) return;
-
-        document.getElementById('detail-modal-title').innerText = item.icon + ' ' + item.title;
-
-        let content = `<p><strong>${item.description}</strong></p>`;
-
-        if (item.content) {
-            if (typeof item.content === 'string') {
-                content += `<h3>详细介绍</h3><p>${item.content}</p>`;
-            } else {
-                if (item.content.history) {
-                    content += `<h3>历史渊源</h3><p>${item.content.history}</p>`;
-                }
-                if (item.content.healthWisdom) {
-                    content += `<h3>健康智慧</h3><p>${item.content.healthWisdom}</p>`;
-                }
-                if (item.content.formulas && Array.isArray(item.content.formulas)) {
-                    content += `<h3>经典配方</h3><ul>`;
-                    item.content.formulas.forEach(f => {
-                        content += `<li><strong>${f.name}</strong>：${f.ingredients}<br><em>功效：${f.effect}</em></li>`;
-                    });
-                    content += `</ul>`;
-                }
-                if (item.content.healthBenefits && Array.isArray(item.content.healthBenefits)) {
-                    content += `<h3>健康价值</h3><ul>`;
-                    item.content.healthBenefits.forEach(h => content += `<li>${h}</li>`);
-                    content += `</ul>`;
-                }
-                if (item.content.health) {
-                    content += `<h3>健康价值</h3><p>${item.content.health}</p>`;
-                }
-                if (item.content.culture) {
-                    content += `<h3>文化内涵</h3><p>${item.content.culture}</p>`;
-                }
-            }
-        }
-
-        document.getElementById('detail-modal-body').innerHTML = content;
-        document.getElementById('detail-modal').classList.add('active');
     }
 
     renderHealthContent(type) {
@@ -351,20 +280,23 @@ class LingnanHealthAgent {
         switch (type) {
             case 'seasonal':
                 const seasons = ['spring', 'summer', 'autumn', 'winter'];
+                const seasonNames = { spring: '春', summer: '夏', autumn: '秋', winter: '冬' };
                 container.innerHTML = `
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem;">
-                        ${seasons.map((season, idx) => {
+                        ${seasons.map(season => {
                             const data = KNOWLEDGE_BASE.seasonalHealth[season];
                             return `
-                                <div class="culture-card" data-health-type="seasonal" data-index="${idx}">
+                                <div class="culture-card">
                                     <div class="culture-card-image" style="font-size: 3.5rem;">${data.icon}</div>
                                     <div class="culture-card-content">
                                         <h3 class="culture-card-title">${data.title}</h3>
                                         <p style="margin-bottom: 0.75rem;"><strong>原则：</strong>${data.principle}</p>
                                         <h4 style="margin: 0.5rem 0; font-size: 0.95rem;">养生要点：</h4>
                                         <ul style="margin-left: 1.25rem; font-size: 0.9rem; line-height: 1.8;">
-                                            ${data.tips.slice(0, 3).map(tip => `<li>${tip}</li>`).join('')}
+                                            ${data.tips.slice(0, 4).map(tip => `<li>${tip}</li>`).join('')}
                                         </ul>
+                                        <h4 style="margin: 0.75rem 0 0.25rem; font-size: 0.95rem;">推荐汤品：</h4>
+                                        <p style="font-size: 0.9rem;">${data.soups.join('、')}</p>
                                     </div>
                                 </div>
                             `;
@@ -376,13 +308,18 @@ class LingnanHealthAgent {
             case 'constitution':
                 container.innerHTML = `
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem;">
-                        ${KNOWLEDGE_BASE.nineConstitutions.map((cons, idx) => `
-                            <div class="culture-card" data-health-type="constitution" data-index="${idx}">
+                        ${KNOWLEDGE_BASE.nineConstitutions.map(cons => `
+                            <div class="culture-card">
                                 <div class="culture-card-image" style="height: 120px; font-size: 3rem;">${cons.icon}</div>
                                 <div class="culture-card-content">
                                     <h3 class="culture-card-title">${cons.name}</h3>
                                     <p class="culture-card-desc">${cons.description}</p>
                                     <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);"><strong>特点：</strong>${cons.feature}</p>
+                                    ${cons.tips ? `
+                                        <ul style="margin-top: 0.5rem; margin-left: 1.25rem; font-size: 0.85rem; color: var(--text-secondary);">
+                                            ${cons.tips.map(tip => `<li>${tip}</li>`).join('')}
+                                        </ul>
+                                    ` : ''}
                                 </div>
                             </div>
                         `).join('')}
@@ -393,14 +330,14 @@ class LingnanHealthAgent {
             case 'diet':
                 container.innerHTML = `
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem;">
-                        ${KNOWLEDGE_BASE.herbalSoups.map((soup, idx) => `
-                            <div class="culture-card" data-health-type="diet" data-index="${idx}">
+                        ${KNOWLEDGE_BASE.herbalSoups.map(soup => `
+                            <div class="culture-card">
                                 <div class="culture-card-image" style="height: 140px; font-size: 3.5rem;">${soup.icon}</div>
                                 <div class="culture-card-content">
                                     <h3 class="culture-card-title">${soup.name}</h3>
                                     <p style="margin-bottom: 0.5rem;"><strong>功效：</strong>${soup.effect}</p>
                                     <p style="margin-bottom: 0.5rem;"><strong>适用季节：</strong>${soup.season}</p>
-                                    <p class="culture-card-desc"><strong>材料：</strong>${soup.ingredients}</p>
+                                    <p style="font-size: 0.9rem; color: var(--text-secondary);"><strong>材料：</strong>${soup.ingredients}</p>
                                 </div>
                             </div>
                         `).join('')}
@@ -408,116 +345,17 @@ class LingnanHealthAgent {
                 `;
                 break;
         }
-
-        // 绑定点击事件
-        container.querySelectorAll('.culture-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const healthType = card.dataset.healthType;
-                const idx = parseInt(card.dataset.index);
-                this.showHealthDetail(healthType, idx);
-            });
-        });
-    }
-
-    showHealthDetail(type, index) {
-        let content = '';
-        let title = '';
-        let icon = '';
-
-        if (type === 'seasonal') {
-            const seasons = ['spring', 'summer', 'autumn', 'winter'];
-            const seasonNames = { spring: '春季', summer: '夏季', autumn: '秋季', winter: '冬季' };
-            const season = seasons[index];
-            const data = KNOWLEDGE_BASE.seasonalHealth[season];
-            icon = data.icon;
-            title = data.title;
-            content = `
-                <h3>养生原则</h3>
-                <p>${data.principle}</p>
-                <h3>养生要点</h3>
-                <ul>
-                    ${data.tips.map(tip => `<li>${tip}</li>`).join('')}
-                </ul>
-                <h3>推荐汤品</h3>
-                <p>${data.soups.join('、')}</p>
-                <h3>推荐食材</h3>
-                <p>${data.foods.join('、')}</p>
-            `;
-        } else if (type === 'constitution') {
-            const data = KNOWLEDGE_BASE.nineConstitutions[index];
-            icon = data.icon;
-            title = data.name;
-            content = `
-                <p><strong>${data.description}</strong></p>
-                <h3>特征</h3>
-                <p>${data.feature}</p>
-                <h3>养生建议</h3>
-                <ul>
-                    ${data.tips.map(tip => `<li>${tip}</li>`).join('')}
-                </ul>
-            `;
-        } else if (type === 'diet') {
-            const data = KNOWLEDGE_BASE.herbalSoups[index];
-            icon = data.icon;
-            title = data.name;
-            content = `
-                <h3>功效</h3>
-                <p>${data.effect}</p>
-                <h3>适用季节</h3>
-                <p>${data.season}</p>
-                <h3>材料</h3>
-                <p>${data.ingredients}</p>
-            `;
-        }
-
-        document.getElementById('detail-modal-title').innerText = icon + ' ' + title;
-        document.getElementById('detail-modal-body').innerHTML = content;
-        document.getElementById('detail-modal').classList.add('active');
     }
 
     renderSolarTerms() {
         const container = document.getElementById('solar-terms-grid');
-        container.innerHTML = KNOWLEDGE_BASE.solarTerms.map((term, idx) => `
-            <div class="solar-term-card" data-term-index="${idx}">
+        container.innerHTML = KNOWLEDGE_BASE.solarTerms.map(term => `
+            <div class="solar-term-card">
                 <div class="solar-term-icon">${term.icon}</div>
                 <div class="solar-term-name">${term.name}</div>
                 <div class="solar-term-date">${term.date}</div>
             </div>
         `).join('');
-
-        // 绑定点击事件
-        container.querySelectorAll('.solar-term-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const idx = parseInt(card.dataset.termIndex);
-                this.showSolarTermDetail(idx);
-            });
-        });
-    }
-
-    showSolarTermDetail(index) {
-        const term = KNOWLEDGE_BASE.solarTerms[index];
-        const seasonHealth = KNOWLEDGE_BASE.seasonalHealth;
-        let seasonTip = '';
-
-        if (term.month >= 3 && term.month <= 5 && seasonHealth?.spring) {
-            seasonTip = `<h3>春季养生要点</h3><ul>${seasonHealth.spring.tips.slice(0, 3).map(t => `<li>${t}</li>`).join('')}</ul>`;
-        } else if (term.month >= 6 && term.month <= 8 && seasonHealth?.summer) {
-            seasonTip = `<h3>夏季养生要点</h3><ul>${seasonHealth.summer.tips.slice(0, 3).map(t => `<li>${t}</li>`).join('')}</ul>`;
-        } else if (term.month >= 9 && term.month <= 11 && seasonHealth?.autumn) {
-            seasonTip = `<h3>秋季养生要点</h3><ul>${seasonHealth.autumn.tips.slice(0, 3).map(t => `<li>${t}</li>`).join('')}</ul>`;
-        } else if (seasonHealth?.winter) {
-            seasonTip = `<h3>冬季养生要点</h3><ul>${seasonHealth.winter.tips.slice(0, 3).map(t => `<li>${t}</li>`).join('')}</ul>`;
-        }
-
-        document.getElementById('detail-modal-title').innerText = term.icon + ' ' + term.name;
-        document.getElementById('detail-modal-body').innerHTML = `
-            <p><strong>日期：</strong>${term.date}</p>
-            ${seasonTip}
-            <p style="color: #666; font-size: 0.9rem; margin-top: 16px;">
-                💡 提示：节气养生应结合岭南气候特点，注重祛湿、清热、润燥的调整。
-            </p>
-        `;
-        document.getElementById('detail-modal').classList.add('active');
     }
 
     startConstitutionTest() {
@@ -556,7 +394,7 @@ class LingnanHealthAgent {
             {
                 q: '您的饮食习惯偏好？',
                 options: ['喜凉饮', '喜热饮', '喜油腻', '不挑剔']
-            },
+            }
         ];
 
         if (step > questions.length) {
@@ -610,11 +448,11 @@ class LingnanHealthAgent {
             </div>
         `;
 
-        document.getElementById('close-test-modal').addEventListener('click', () => this.closeModal('constitution-modal'));
+        document.getElementById('close-test-modal').addEventListener('click', () => this.closeModal());
     }
 
-    closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('active');
+    closeModal() {
+        document.getElementById('constitution-modal').classList.remove('active');
     }
 
     changeYear(delta) {

@@ -401,13 +401,11 @@ body {
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
-    cursor: pointer;
 }
 
 .culture-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
-    border-color: var(--primary-color);
 }
 
 .culture-card-image {
@@ -434,10 +432,6 @@ body {
     font-size: 0.95rem;
     color: var(--text-secondary);
     line-height: 1.7;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 
 /* 养生方案面板 */
