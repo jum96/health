@@ -21,6 +21,7 @@
                     <button class="nav-tab" data-tab="culture">🏛️ 文化科普</button>
                     <button class="nav-tab" data-tab="health">🌿 养生方案</button>
                     <button class="nav-tab" data-tab="calendar">📅 节气日历</button>
+                    <button class="nav-tab" data-tab="tools">🔧 养生工具</button>
                 </nav>
             </div>
         </header>
@@ -31,6 +32,24 @@
             <section id="chat-panel" class="panel active">
                 <div class="chat-container">
                     <div class="chat-sidebar">
+                        <div class="persona-selector">
+                            <h3>🎭 智能体人格</h3>
+                            <div class="persona-buttons">
+                                <button class="persona-btn active" data-persona="default">🏮 灵境向导</button>
+                                <button class="persona-btn" data-persona="mom">👵 阿妈模式</button>
+                                <button class="persona-btn" data-persona="doctor">👨‍⚕️ 医师模式</button>
+                                <button class="persona-btn" data-persona="young">😎 后生模式</button>
+                            </div>
+                        </div>
+                        <div class="daily-tip">
+                            <h3>🏮 今日养生贴士</h3>
+                            <div class="tip-content" id="daily-tip-content">
+                                今日养生贴士加载中...
+                            </div>
+                            <div class="solar-countdown" id="solar-countdown">
+                                距下一个节气还有 <span id="countdown-days">-</span> 天
+                            </div>
+                        </div>
                         <div class="quick-questions">
                             <h3>快捷问题</h3>
                             <div class="question-list">
@@ -44,6 +63,11 @@
                         <div class="constitution-test">
                             <h3>体质测试</h3>
                             <button id="start-constitution-test" class="test-btn">开始九种体质自测</button>
+                        </div>
+                        <div class="favorites-section" id="favorites-section" style="display: none;">
+                            <h3>⭐ 我的收藏</h3>
+                            <div class="favorites-list" id="favorites-list">
+                            </div>
                         </div>
                     </div>
 
@@ -70,9 +94,10 @@
                         <div class="chat-input-area">
                             <div class="input-wrapper">
                                 <textarea id="user-input" placeholder="输入你的问题..." rows="1"></textarea>
+                                <button id="voice-btn" class="voice-btn" title="语音输入">🎤</button>
                                 <button id="send-btn" class="send-btn">发送</button>
                             </div>
-                            <div class="input-hint">按 Enter 发送，Shift+Enter 换行</div>
+                            <div class="input-hint">按 Enter 发送，Shift+Enter 换行，🎤 语音输入</div>
                         </div>
                     </div>
                 </div>
@@ -80,14 +105,17 @@
 
             <!-- 文化科普面板 -->
             <section id="culture-panel" class="panel">
-                <div class="culture-container">
-                    <div class="culture-categories">
-                        <button class="category-btn active" data-category="heritage">🏮 非遗文化</button>
-                        <button class="category-btn" data-category="architecture">🏯 岭南建筑</button>
-                        <button class="category-btn" data-category="food">🍲 饮食文化</button>
-                        <button class="category-btn" data-category="customs">🎊 民俗节日</button>
+                <div class="health-container">
+                    <div class="health-sidebar">
+                        <h3>文化分类</h3>
+                        <div class="health-options">
+                            <button class="health-option active" data-category="heritage">🏮 非遗文化</button>
+                            <button class="health-option" data-category="architecture">🏯 岭南建筑</button>
+                            <button class="health-option" data-category="food">🍲 饮食文化</button>
+                            <button class="health-option" data-category="customs">🎊 民俗节日</button>
+                        </div>
                     </div>
-                    <div class="culture-content" id="culture-content">
+                    <div class="health-main" id="culture-content">
                         <!-- 动态加载内容 -->
                     </div>
                 </div>
@@ -123,6 +151,26 @@
                     </div>
                     <div class="solar-terms-grid" id="solar-terms-grid">
                         <!-- 24节气卡片 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 养生工具面板 -->
+            <section id="tools-panel" class="panel">
+                <div class="tools-container">
+                    <div class="tools-sidebar">
+                        <h3>🔧 养生工具箱</h3>
+                        <div class="tool-options">
+                            <button class="tool-option active" data-type="heritage-calendar">📜 非遗日历</button>
+                            <button class="tool-option" data-type="checkin">✅ 养生打卡</button>
+                            <button class="tool-option" data-type="music">🎵 养生音乐</button>
+                            <button class="tool-option" data-type="reminder">⏰ 养生提醒</button>
+                            <button class="tool-option" data-type="family">👨‍👩‍👧‍👦 家庭档案</button>
+                            <button class="tool-option" data-type="ingredients">🥬 食材指南</button>
+                        </div>
+                    </div>
+                    <div class="tools-main" id="tools-content">
+                        <!-- 动态加载内容 -->
                     </div>
                 </div>
             </section>

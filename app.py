@@ -1,4 +1,9 @@
 # 岭南康养·灵境向导 - 后端主程序
+import sys
+import io
+# 修复Windows控制台编码问题
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
